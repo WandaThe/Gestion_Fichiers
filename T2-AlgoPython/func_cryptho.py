@@ -80,7 +80,7 @@ def upload_to_ftp(file_path, ftp_host, ftp_user, ftp_pass): #site_directory
 if __name__ == "__main__":
     # Paramètres de configuration (à adapter selon votre environnement de test)
     # L'arborescence doit être uniforme pour les différents sites (Paris, Marseille, Rennes, Grenoble)
-    FICHIER_A_SAUVEGARDER = "patient.txt" 
+    FICHIER_A_SAUVEGARDER = input("Entrez le chemin du fichier à sauvegarder : ") 
     FTP_HOST = "127.0.0.1" # Remplacer par l'IP du serveur FTP de Paris
     FTP_USER = "Marseille"
     FTP_PASS = "Marseille"
