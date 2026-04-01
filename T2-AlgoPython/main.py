@@ -1,6 +1,26 @@
+import getpass
+
 from local import *   #j'intégre le fichier local,ftp et outils
 #from ftp import *
 from outils import *
+from importFTP import backup_ponctuel
+
+
+def authentifier_admin():
+    print("Connexion administrateur obligatoire")
+    compte_admin = input("Compte admin : ").strip()
+    mdp_admin = getpass.getpass("Mot de passe admin : ")
+
+    if not compte_admin:
+        raise Exception("Le compte admin ne peut pas être vide")
+    if not mdp_admin:
+        raise Exception("Le mot de passe admin ne peut pas être vide")
+
+    return compte_admin, mdp_admin
+
+
+COMPTE_ADMIN, MDP_ADMIN = authentifier_admin()
+
 
 def menu():
     print("""
@@ -14,6 +34,7 @@ def menu():
 8 - Afficher le dossier courant
 9 - Entrer dans un dossier
 10 - Revenir au dossier parent
+B - Backup ponctuel vers le FTP
 0 - Quitter
 """)
 
@@ -86,6 +107,18 @@ while True:
             case "10":
                 nouveau = Retour_Dossier()
                 print("Retour au dossier parent :", nouveau)
+                
+            case "B" | "b":
+                chemin_source = input(
+                    "Chemin du fichier ou dossier à sauvegarder : "
+                ).strip()
+                
+                resultat = backup_ponctuel( 
+                    COMPTE_ADMIN,
+                    MDP_ADMIN,
+                    chemin_source,
+                )
+                print(resultat)
 
             case "0":
                 print("Fin du programme")
