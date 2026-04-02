@@ -8,11 +8,12 @@ FTP_HOST = '127.0.0.1'
 
 def backup_ponctuel(compte_admin, mdp_admin, chemin_backup):
     ftp_host = '127.0.0.1'
-    connexion = FTP(ftp_host, compte_admin, mdp_admin)
+    connexion = FTP(ftp_host)
+    connexion.login(compte_admin, mdp_admin)
 
     print(connexion.getwelcome())
 
-    connexion.cwd(compte_admin)
+    
 
     if os.path.isfile(chemin_backup):
         nom_fichier = os.path.basename(chemin_backup)
