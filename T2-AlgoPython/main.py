@@ -1,9 +1,7 @@
-import getpass
-
-from local import *   #j'intégre le fichier local,ftp et outils
-#from ftp import *
-from outils import *
-from importFTP import backup_ponctuel
+import getpass ## pour la saisie sécurisée du mot de passe
+## import des fichiers local.py et importFTP.py
+import local   
+import importFTP
 
 
 def authentifier_admin():
@@ -46,34 +44,34 @@ while True:
         match choix:
             case "1":
                 chemin = input("Nom du dossier : ")
-                for e in List_Dossier(chemin):
+                for e in local.List_Dossier(chemin):
                     print(e)
 
             case "2":
                 chemin = input("Nom du dossier : ")
-                Dossier(chemin)
+                local.Dossier(chemin)
                 print("Dossier créé")
 
             case "3":
                 chemin = input("Nom du fichier : ")
-                Fichier(chemin)
+                local.Fichier(chemin)
                 print("Fichier créé")
 
             case "4":
                 src = input("Source : ")
                 dest = input("Destination : ")
-                Copier(src, dest)
+                local.Copier(src, dest)
                 print("Copie effectuée")
 
             case "5":
                 src = input("Source : ")
                 dest = input("Destination : ")
-                Deplacer(src, dest)
+                local.Deplacer(src, dest)
                 print("Déplacement effectué")
 
             case "6":
                 chemin = input("Nom : ")
-                Supprimer(chemin)
+                local.Supprimer(chemin)
                 print("Suppression effectuée")
 
             case "7":
@@ -85,38 +83,32 @@ while True:
                 match type_modif:
                     case "1":
                         nouveau_nom = input("Nouveau nom : ")
-                        Modifier(chemin, nouveau_nom=nouveau_nom)
+                        local.Modifier(chemin, nouveau_nom=nouveau_nom)
                         print("Nom modifié")
 
                     case "2":
                         nouveau_contenu = input("Nouveau contenu : ")
-                        Modifier(chemin, nouveau_contenu=nouveau_contenu)
+                        local.Modifier(chemin, nouveau_contenu=nouveau_contenu)
                         print("Contenu modifié")
 
                     case _:
                         print("Choix invalide")
             
             case "8":
-                print("Dossier courant :", Chemin_Courant())
+                print("Dossier courant :", local.Chemin_Courant())
             
             case "9":
                 chemin = input("Nom du dossier à ouvrir : ")
-                nouveau = Entrer_Dossier(chemin)
+                nouveau = local.Entrer_Dossier(chemin)
                 print("Vous etes dans le dossier :", nouveau)
 
             case "10":
-                nouveau = Retour_Dossier()
+                nouveau = local.Retour_Dossier()
                 print("Retour au dossier parent :", nouveau)
                 
             case "B" | "b":
                 chemin_source = input("Chemin du fichier ou dossier à sauvegarder : ").strip()
-                resultat = backup_ponctuel(COMPTE_ADMIN, MDP_ADMIN, chemin_source)
-                
-                resultat = backup_ponctuel( 
-                    COMPTE_ADMIN,
-                    MDP_ADMIN,
-                    chemin_source,
-                )
+                resultat = importFTP.backup_ponctuel(COMPTE_ADMIN, MDP_ADMIN, chemin_source)
                 print(resultat)
 
             case "0":
