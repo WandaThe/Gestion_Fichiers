@@ -34,11 +34,17 @@ def encrypt_file(file_path, key):
         # Chiffrement
         encrypted = fernet.encrypt(original)
         
-        # Création du nom de fichier horodaté (Ex: document_20260321_052810.enc)
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Création du nom de fichier horodaté (Ex: document_HEBDO/QUOTIDIEN_20260321_052810.enc)
+        timestamp = datetime.datetime.now().strftime("%d%m%Y_%H%M%S")
         base_name = os.path.basename(file_path)
-        encrypted_file_path = f"{base_name}_{timestamp}.enc"
-        
+        # On vérifie si on est vendredi (jour 4)
+        if datetime.datetime.now().weekday() == 4:
+            type_backup = "HEBDO"
+        else:
+            type_backup = "QUOTIDIEN"         
+
+        encrypted_file_path = f"{base_name}_{type_backup}_{timestamp}.enc"
+
         # Sauvegarde locale du fichier chiffré
         with open(encrypted_file_path, "wb") as encrypted_file:
             encrypted_file.write(encrypted)
@@ -99,7 +105,7 @@ if __name__ == "__main__":
         if fichier_chiffre:
             upload_to_ftp(fichier_chiffre, FTP_HOST, FTP_USER, FTP_PASS) #SITE_DIR
             
-            # (Optionnel) Nettoyage : supprimer le fichier chiffré local si l'upload a réussi
-            # os.remove(fichier_chiffre)
+            #Nettoyage : supprimer le fichier chiffré local si l'upload a réussi
+            os.remove(fichier_chiffre)
             
     print("--- FIN DE LA PROCÉDURE ---")
