@@ -13,13 +13,13 @@ def backup_ponctuel(compte_admin, mdp_admin, chemin_backup):
         # Chiffrement du fichier à sauvegarder
         cle = generate_and_load_key()
         if not cle:
-            return "/!\ Erreur : Impossible de charger la clé de chiffrement."
+            return "/!\\ Erreur : Impossible de charger la clé de chiffrement."
             
         print("[*] Chiffrement du fichier en cours...")
         fichier_chiffre = encrypt_file(chemin_backup, cle)
         
         if not fichier_chiffre:
-            return "/!\ Erreur lors du chiffrement du fichier."
+            return "/!\\ Erreur lors du chiffrement du fichier."
 
         # Upload vers le FTP
         try:
@@ -54,7 +54,7 @@ def backup_ponctuel(compte_admin, mdp_admin, chemin_backup):
             # En cas d'erreur FTP, on supprime quand même le fichier temporaire chiffré s'il a été créé
             if os.path.exists(fichier_chiffre):
                 os.remove(fichier_chiffre)
-            return f"/!\ Erreur lors de la communication FTP : {e}"
+            return f"/!\\ Erreur lors de la communication FTP : {e}"
 
     else: ## Si le chemin n'est pas un fichier ou encore qu'il n'existe pas, on retourne ce message d'erreur.
-        return "/!\ Le fichier source n'existe pas ou la sauvegarde de dossiers complets n'est pas encore gérée."
+        return "/!\\ Le fichier source n'existe pas ou la sauvegarde de dossiers complets n'est pas encore gérée."
