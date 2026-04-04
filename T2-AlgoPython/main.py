@@ -109,9 +109,8 @@ while True:
                 print("Retour au dossier parent :", nouveau)
                 
             case "B" | "b":
-                chemin_source = input(
-                    "Chemin du fichier ou dossier à sauvegarder : "
-                ).strip()
+                chemin_source = input("Chemin du fichier ou dossier à sauvegarder : ").strip()
+                resultat = backup_ponctuel(COMPTE_ADMIN, MDP_ADMIN, chemin_source)
                 
                 resultat = backup_ponctuel( 
                     COMPTE_ADMIN,

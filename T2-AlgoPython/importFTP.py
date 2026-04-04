@@ -1,55 +1,60 @@
 from ftplib import FTP, error_perm
-### import ftplib
 import os
-### import sys
-from outils import version
 
-FTP_HOST = '127.0.0.1'
+# --- import des fonctions de cryptographie ---
+from func_cryptho import generate_and_load_key, encrypt_file
 
 def backup_ponctuel(compte_admin, mdp_admin, chemin_backup):
-    ftp_host = '127.0.0.1'
-    connexion = FTP(ftp_host)
-    connexion.login(compte_admin, mdp_admin)
+    ftp_host = '127.0.0.1' # Laisser cette IP si exeuté sur la même machine que le serveur FTP, sinon adapter à l'IP du serveur FTP
 
-    print(connexion.getwelcome())
-
-    
-
+    # Si le chemin correspond à un fichier, on procède au chiffrement et à l'upload
     if os.path.isfile(chemin_backup):
-        nom_fichier = os.path.basename(chemin_backup)
-        file = open(chemin_backup, 'rb')
-        connexion.storbinary(f'STOR {nom_fichier}', file)
-        file.close()
-        print("Backup fichier effectué")
+        
+        # Chiffrement du fichier à sauvegarder
+        cle = generate_and_load_key()
+        if not cle:
+            return "/!\ Erreur : Impossible de charger la clé de chiffrement."
+            
+        print("[*] Chiffrement du fichier en cours...")
+        fichier_chiffre = encrypt_file(chemin_backup, cle)
+        
+        if not fichier_chiffre:
+            return "/!\ Erreur lors du chiffrement du fichier."
 
-    else:
-        print("Le backup dossier n'est pas encore géré")
+        # Upload vers le FTP
+        try:
+            print(f"Connexion au serveur FTP {ftp_host}...")
+            connexion = FTP(ftp_host)
+            connexion.login(compte_admin, mdp_admin)
+            
+            # Navigation vers le dossier des bacups ponctuels 
+            nom_dossier_cible = "backup_ponctuel"
+            try:
+                connexion.cwd(nom_dossier_cible)
+            except error_perm:
+                # Si le dossier n'existe pas encore sur le serveur, on le crée proprement
+                print(f"Le dossier '{nom_dossier_cible}' n'existe pas. Création en cours...")
+                connexion.mkd(nom_dossier_cible)
+                connexion.cwd(nom_dossier_cible)
+            # ----------------------------------------
 
-    connexion.quit()
+            # Upload du fichier chiffré
+            nom_fichier_distant = os.path.basename(fichier_chiffre)
+            with open(fichier_chiffre, 'rb') as file:
+                connexion.storbinary(f'STOR {nom_fichier_distant}', file)
 
-# ### Les parametresde connexion au serveur FTP
+            connexion.quit()
 
-# ftp_host = '127.0.0.1'
-# ftp_login = 'Marseille'
-# ftp_password = '123'
+            # Nettoyage : suppressions de la copie locale chiffrée
+            os.remove(fichier_chiffre)
+            
+            return f"OK: Backup ponctuel chiffré effectué avec succès dans '/{nom_dossier_cible}/{nom_fichier_distant}'"
 
-# ftp_host = '127.0.0.1'
-# ftp_login = 'Grenoble'
-# ftp_password = '123'
+        except Exception as e:
+            # En cas d'erreur FTP, on supprime quand même le fichier temporaire chiffré s'il a été créé
+            if os.path.exists(fichier_chiffre):
+                os.remove(fichier_chiffre)
+            return f"/!\ Erreur lors de la communication FTP : {e}"
 
-# ftp_host = '127.0.0.1'
-# ftp_login = 'Paris'
-# ftp_password = '123'
-
-# connexion = FTP(ftp_host, ftp_login, ftp_password)
-# print(connexion.getwelcome())
-
-# ##connexion.set_pasv(True)
-# print(connexion.pwd())
-# print(connexion.nlst())
-
-# file=open('test.txt', 'rb')
-# ftp.storbinary('STOR test.txt', file)
-# ftp.quit()
-# print('apres le storbinary')
-# print(ftp.nlst())
+    else: ## Si le chemin n'est pas un fichier ou encore qu'il n'existe pas, on retourne ce message d'erreur.
+        return "/!\ Le fichier source n'existe pas ou la sauvegarde de dossiers complets n'est pas encore gérée."
