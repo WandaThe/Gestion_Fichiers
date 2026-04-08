@@ -20,7 +20,7 @@ def generate_and_load_key(key_path="conf.key"):
         with open(key_path, "rb") as key_file:
             return key_file.read()
     except Exception as e:
-        print(f"/!\ Erreur lors de la gestion de la clé : {e}")
+        print(f"/!\\ Erreur lors de la gestion de la clé : {e}")
         return None
 
 def encrypt_file(file_path, key):
@@ -56,10 +56,10 @@ def encrypt_file(file_path, key):
         return encrypted_file_path
         
     except FileNotFoundError:
-        print(f"/!\ Erreur : Le fichier {file_path} est introuvable.")
+        print(f"/!\\ Erreur : Le fichier {file_path} est introuvable.")
         return None
     except Exception as e:
-        print(f"/!\ Erreur lors du chiffrement : {e}")
+        print(f"/!\\ Erreur lors du chiffrement : {e}")
         return None
 
 def upload_to_ftp(file_path, ftp_host, ftp_user, ftp_pass):
@@ -82,7 +82,7 @@ def upload_to_ftp(file_path, ftp_host, ftp_user, ftp_pass):
         ftp.quit()
         
     except Exception as e:
-        print(f"/!\ Erreur lors du transfert FTP : {e}")
+        print(f"/!\\ Erreur lors du transfert FTP : {e}")
 
 # --- Bloc d'exécution principal ---
 if __name__ == "__main__":
